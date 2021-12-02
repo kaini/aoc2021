@@ -17,7 +17,7 @@ void arraylist_free(arraylist* arraylist) {
     free(arraylist->buffer);
 }
 
-void arraylist_append(arraylist* arraylist, void* item) {
+void arraylist_append(arraylist* arraylist, const void* item) {
     assert(arraylist);
     assert(item);
     if (arraylist->size == arraylist->capacity) {
@@ -29,18 +29,23 @@ void arraylist_append(arraylist* arraylist, void* item) {
     arraylist->size += 1;
 }
 
-void* arraylist_get(arraylist* arraylist, size_t index) {
+void* arraylist_get(const arraylist* arraylist, size_t index) {
     assert(arraylist);
     assert(index < arraylist->size);
     return arraylist->buffer + arraylist->item_size * index;
 }
 
-size_t arraylist_size(arraylist* arraylist) {
+size_t arraylist_size(const arraylist* arraylist) {
     assert(arraylist);
     return arraylist->size;
 }
 
-void* arraylist_array(arraylist* arraylist) {
+void* arraylist_begin(const arraylist* arraylist) {
     assert(arraylist);
     return arraylist->buffer;
+}
+
+void* arraylist_end(const arraylist* arraylist) {
+    assert(arraylist);
+    return arraylist->buffer + arraylist->size * arraylist->item_size;
 }
