@@ -1,4 +1,4 @@
-SHARED_SOURCES := arraylist.c
+SHARED_SOURCES := arraylist.c parse.c
 SHARED_OBJECTS := $(patsubst %.c,build/%.o,$(SHARED_SOURCES))
 
 DAY_SOURCES = $(wildcard day*.c)
@@ -6,7 +6,7 @@ DAY_OBJECTS := $(patsubst %.c,build/%.o,$(DAY_SOURCES))
 DAY_EXECUTABLES := $(patsubst %.c,build/%,$(DAY_SOURCES))
 
 CC := gcc
-CFLAGS := -std=c17 -Wall -Wextra -pedantic -O3 -march=native -flto
+CFLAGS := -std=c17 -Wall -Wextra -pedantic -O3 -march=native -flto -g3
 
 .SUFFIXES:
 .PHONY: all clean

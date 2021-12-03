@@ -14,7 +14,7 @@ typedef struct command {
 
 int main() {
     arraylist commands;
-    arraylist_init(&commands, sizeof(command));
+    arraylist_init(&commands, sizeof(command), NULL);
     for (;;) {
         char direction_str[8];
         int amount;

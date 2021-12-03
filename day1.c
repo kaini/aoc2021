@@ -5,7 +5,7 @@
 
 int main() {
     arraylist depths;
-    arraylist_init(&depths, sizeof(int));
+    arraylist_init(&depths, sizeof(int), NULL);
     for (;;) {
         int depth;
         int result = scanf("%d", &depth);
