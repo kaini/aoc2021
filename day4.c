@@ -7,6 +7,23 @@
 #define BOARD_SIZE 5
 typedef int board[BOARD_SIZE][BOARD_SIZE];
 
+static void read_boards(arraylist* boards) {
+    for (;;) {
+        board board;
+        for (int i = 0; i < BOARD_SIZE; ++i) {
+            for (int j = 0; j < BOARD_SIZE; ++j) {
+                int result = scanf("%d", &board[i][j]);
+                if (result == EOF) {
+                    assert(i == 0 && j == 0);
+                    return;
+                }
+                assert(result == 1);
+            }
+        }
+        arraylist_append(boards, &board);
+    }
+}
+
 static void make_mark(board* mark, board* board, int number) {
     for (int i = 0; i < BOARD_SIZE; ++i) {
         for (int j = 0; j < BOARD_SIZE; ++j) {
@@ -62,21 +79,7 @@ int main() {
 
     arraylist boards;
     arraylist_init(&boards, sizeof(board), NULL);
-    for (;;) {
-        board board;
-        for (int i = 0; i < BOARD_SIZE; ++i) {
-            for (int j = 0; j < BOARD_SIZE; ++j) {
-                int result = scanf("%d", &board[i][j]);
-                if (result == EOF) {
-                    assert(i == 0 && j == 0);
-                    goto after_read_loop;
-                }
-                assert(result == 1);
-            }
-        }
-        arraylist_append(&boards, &board);
-    }
-    after_read_loop:;
+    read_boards(&boards);
 
     arraylist marks;
     arraylist_init(&marks, sizeof(board), NULL);
@@ -85,52 +88,27 @@ int main() {
         arraylist_append(&marks, &board);
     }
 
-    size_t winning_board_index = -1;
-    board* winning_board = NULL;
-    board* winning_mark = NULL;
-    int* winning_number = NULL;
+    bool* boards_won = calloc(arraylist_size(&boards), sizeof(bool));
+    assert(boards_won);
+    size_t won_count = 0;
     for (int* number = arraylist_begin(&numbers); number != arraylist_end(&numbers); ++number) {
-        for (size_t b = 0; b < arraylist_size(&boards); ++b) {
-            board* mark = arraylist_get(&marks, b);
-            board* board = arraylist_get(&boards, b);
-            make_mark(mark, board, *number);
-            if (check_won(mark)) {
-                winning_board_index = b;
-                winning_board = board;
-                winning_mark = mark;
-                winning_number = number;
-                goto after_game_loop;
-            }
-        }
-    }
-    after_game_loop:;
-    assert(winning_board && winning_mark && winning_number && winning_board_index != (size_t)-1);
-    printf("%d\n", board_sum(winning_mark, winning_board, *winning_number));
-
-    size_t boards_won_count = 1;
-    bool boards_won[arraylist_size(&boards)];
-    memset(&boards_won, 0, sizeof(bool) * arraylist_size(&boards));
-    boards_won[winning_board_index] = true;
-    for (int* number = winning_number; number != arraylist_end(&numbers) && boards_won_count < arraylist_size(&boards); ++number) {
         for (size_t b = 0; b < arraylist_size(&boards); ++b) {
             if (!boards_won[b]) {
                 board* mark = arraylist_get(&marks, b);
                 board* board = arraylist_get(&boards, b);
                 make_mark(mark, board, *number);
                 if (check_won(mark)) {
-                    winning_board_index = b;
-                    winning_board = board;
-                    winning_mark = mark;
-                    winning_number = number;
-                    boards_won_count += 1;
+                    if (won_count == 0 || won_count == arraylist_size(&boards) - 1) {
+                        printf("%d\n", board_sum(mark, board, *number));
+                    }
+                    won_count += 1;
                     boards_won[b] = true;
                 }
             }
         }
     }
-    assert(boards_won_count == arraylist_size(&boards));
-    printf("%d\n", board_sum(winning_mark, winning_board, *winning_number));
 
+    free(boards_won);
     arraylist_free(&marks);
     arraylist_free(&boards);
     arraylist_free(&numbers);
