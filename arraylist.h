@@ -1,3 +1,8 @@
+/**
+ * Simple array list.
+ * Items must be copyable with memcpy and will not be free'd by the container.
+ */
+
 #pragma once
 #include <stddef.h>
 #include <stdbool.h>
@@ -6,11 +11,10 @@ typedef struct arraylist {
     size_t size;
     size_t capacity;
     size_t item_size;
-    void (*free_item)(void* item);
     char* buffer;
 } arraylist;
 
-void arraylist_init(arraylist* arraylist, size_t item_size, void (*free_item)(void* item));
+void arraylist_init(arraylist* arraylist, size_t item_size);
 void arraylist_free(arraylist* arraylist);
 
 void arraylist_append(arraylist* arraylist, const void* item);

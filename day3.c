@@ -30,7 +30,7 @@ static bool filter_ch(void* item_ptr, void* ctx_ptr) {
 
 static int find_rating(arraylist* orig_numbers, bool oxygen) {
     arraylist numbers;
-    arraylist_init(&numbers, sizeof(number_str), NULL);
+    arraylist_init(&numbers, sizeof(number_str));
     for (number_str* item = arraylist_begin(orig_numbers); item != arraylist_end(orig_numbers); ++item) {
         arraylist_append(&numbers, item);
     }
@@ -58,7 +58,7 @@ static int find_rating(arraylist* orig_numbers, bool oxygen) {
 
 int main() {
     arraylist numbers;
-    arraylist_init(&numbers, sizeof(number_str), NULL);
+    arraylist_init(&numbers, sizeof(number_str));
     for (;;) {
         number_str number;
         int result = scanf(NUMBER_STR_FORMAT, number);

@@ -64,7 +64,7 @@ static int board_sum(board* mark, board* board, int number) {
 
 int main() {
     arraylist numbers;
-    arraylist_init(&numbers, sizeof(int), NULL);
+    arraylist_init(&numbers, sizeof(int));
     for (;;) {
         int c = fgetc(stdin);
         if (c == EOF || c == '\n') break;
@@ -78,11 +78,11 @@ int main() {
     }
 
     arraylist boards;
-    arraylist_init(&boards, sizeof(board), NULL);
+    arraylist_init(&boards, sizeof(board));
     read_boards(&boards);
 
     arraylist marks;
-    arraylist_init(&marks, sizeof(board), NULL);
+    arraylist_init(&marks, sizeof(board));
     for (size_t i = 0; i < arraylist_size(&boards); ++i) {
         board board = { 0 };
         arraylist_append(&marks, &board);

@@ -16,6 +16,8 @@ typedef struct xy {
     int y;
 } xy;
 
+static const int zero = 0;
+
 static size_t hash_xy(const void* value) {
     return ((xy*)value)->x * 3109 + ((xy*)value)->y * 269;
 }
@@ -39,7 +41,7 @@ static int count_cells_with_more_lines(map* line_count) {
 
 int main() {
     arraylist lines;
-    arraylist_init(&lines, sizeof(line), NULL);
+    arraylist_init(&lines, sizeof(line));
     for (;;) {
         line line;
         int result = scanf("%d,%d -> %d,%d", &line.x1, &line.y1, &line.x2, &line.y2);
@@ -51,7 +53,7 @@ int main() {
     }
 
     map line_count;
-    map_init(&line_count, sizeof(xy), hash_xy, equal_xy, NULL, sizeof(int), NULL);
+    map_init(&line_count, sizeof(xy), hash_xy, equal_xy, sizeof(int));
     for (line* line = arraylist_begin(&lines); line != arraylist_end(&lines); ++line) {
         if (!is_diagonal(*line)) {
             if (line->x1 == line->x2) {
@@ -59,18 +61,18 @@ int main() {
                 int y_end = line->y1 < line->y2 ? line->y2 : line->y1;
                 for (int y = y_start; y <= y_end; ++y) {
                     xy key = { .x = line->x1, .y = y };
-                    int* value_ptr = map_get(&line_count, &key);
-                    int value = (value_ptr ? *value_ptr : 0) + 1;
-                    map_put(&line_count, &key, &value);
+                    int* value = map_get(&line_count, &key);
+                    if (!value) value = map_put(&line_count, &key, &zero);
+                    *value += 1;
                 }
             } else {
                 int x_start = line->x1 < line->x2 ? line->x1 : line->x2;
                 int x_end = line->x1 < line->x2 ? line->x2 : line->x1;
                 for (int x = x_start; x <= x_end; ++x) {
                     xy key = { .x = x, .y = line->y1 };
-                    int* value_ptr = map_get(&line_count, &key);
-                    int value = (value_ptr ? *value_ptr : 0) + 1;
-                    map_put(&line_count, &key, &value);
+                    int* value = map_get(&line_count, &key);
+                    if (!value) value = map_put(&line_count, &key, &zero);
+                    *value += 1;
                 }
             }
         }
@@ -83,9 +85,9 @@ int main() {
             int y = line->y1;
             for (;;) {
                 xy key = { .x = x, .y = y };
-                int* value_ptr = map_get(&line_count, &key);
-                int value = (value_ptr ? *value_ptr : 0) + 1;
-                map_put(&line_count, &key, &value);
+                int* value = map_get(&line_count, &key);
+                if (!value) value = map_put(&line_count, &key, &zero);
+                *value += 1;
                 if (x == line->x2) {
                     assert(y == line->y2);
                     break;

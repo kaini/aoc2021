@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdalign.h>
 
-void map_init(map* map, size_t key_size, size_t (*hash_key)(const void*), bool (*equal_key)(const void*, const void*), void (*free_key)(void*), size_t value_size, void (*free_value)(void*)) {
+void map_init(map* map, size_t key_size, size_t (*hash_key)(const void*), bool (*equal_key)(const void*, const void*), size_t value_size) {
     assert(map);
     assert(key_size > 0);
     assert(hash_key);
@@ -15,42 +15,31 @@ void map_init(map* map, size_t key_size, size_t (*hash_key)(const void*), bool (
     map->key_size = key_size;
     map->hash_key = hash_key;
     map->equal_key = equal_key;
-    map->free_key = free_key;
     map->value_size = value_size;
-    map->free_value = free_value;
     map->actives = NULL;
     map->keys = NULL;
     map->values = NULL;
 }
 
 void map_free(map* map) {
-    for (size_t i = 0; i < map->capacity; ++i) {
-        if (map->actives[i]) {
-            if (map->free_key) map->free_key(map->keys + map->key_size * i);
-            if (map->free_value) map->free_value(map->values + map->value_size * i);
-        }
-    }
     free(map->actives);
     free(map->keys);
     free(map->values);
 }
 
-static void map_put_raw(map* map, const void* key, const void* value) {
+static void* map_put_raw(map* map, const void* key, const void* value) {
     size_t slot = map->hash_key(key) % map->capacity;
     while (map->actives[slot] && !map->equal_key(key, map->keys + map->key_size * slot)) {
         slot = (slot + 1) % map->capacity;
-    }
-    if (map->actives[slot]) {
-            if (map->free_key) map->free_key(map->keys + map->key_size * slot);
-            if (map->free_value) map->free_value(map->values + map->value_size * slot);
     }
     map->size += 1;
     map->actives[slot] = true;
     memcpy(map->keys + map->key_size * slot, key, map->key_size);
     memcpy(map->values + map->value_size * slot, value, map->value_size);
+    return map->values + map->value_size * slot;
 }
 
-void map_put(map* map, const void* key, const void* value) {
+void* map_put(map* map, const void* key, const void* value) {
     assert(map);
     assert(key);
 
@@ -76,7 +65,7 @@ void map_put(map* map, const void* key, const void* value) {
         free(old_values);
     }
 
-    map_put_raw(map, key, value);
+    return map_put_raw(map, key, value);
 }
 
 void* map_get(const map* map, const void* key) {

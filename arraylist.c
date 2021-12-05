@@ -3,23 +3,17 @@
 #include <string.h>
 #include <assert.h>
 
-void arraylist_init(arraylist* arraylist, size_t item_size, void (*free_item)(void* item)) {
+void arraylist_init(arraylist* arraylist, size_t item_size) {
     assert(arraylist);
     assert(item_size > 0);
     arraylist->size = 0;
     arraylist->capacity = 0;
     arraylist->item_size = item_size;
-    arraylist->free_item = free_item;
     arraylist->buffer = NULL;
 }
 
 void arraylist_free(arraylist* arraylist) {
     assert(arraylist);
-    if (arraylist->free_item) {
-        for (char* item = arraylist_begin(arraylist); item != arraylist_end(arraylist); item += arraylist->item_size) {
-            arraylist->free_item(item);
-        }
-    }
     free(arraylist->buffer);
 }
 
@@ -43,9 +37,6 @@ void arraylist_filter_destroy_order(arraylist* arraylist, bool (*filter)(void* i
         if (filter(item, ctx)) {
             item += arraylist->item_size;
         } else {
-            if (arraylist->free_item) {
-                arraylist->free_item(item);
-            }
             if (item != (char*)arraylist_end(arraylist) - arraylist->item_size) {
                 memcpy(item, (char*)arraylist_end(arraylist) - arraylist->item_size, arraylist->item_size);
             }

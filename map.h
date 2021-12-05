@@ -1,3 +1,9 @@
+/**
+ * A simple hash map with linear probing.
+ * The keys and values must be copyable with memcpy.
+ * Both are not free'd by the container.
+ */
+
 #pragma once
 #include <stddef.h>
 #include <stdbool.h>
@@ -8,9 +14,7 @@ typedef struct map {
     size_t key_size;
     size_t (*hash_key)(const void*);
     bool (*equal_key)(const void*, const void*);
-    void (*free_key)(void*);
     size_t value_size;
-    void (*free_value)(void*);
     bool* actives;
     char* keys;
     char* values;
@@ -18,10 +22,10 @@ typedef struct map {
 
 typedef size_t map_iter;
 
-void map_init(map* map, size_t key_size, size_t (*hash_key)(const void*), bool (*equal_key)(const void*, const void*), void (*free_key)(void*), size_t value_size, void (*free_value)(void*));
+void map_init(map* map, size_t key_size, size_t (*hash_key)(const void*), bool (*equal_key)(const void*, const void*), size_t value_size);
 void map_free(map* map);
 
-void map_put(map* map, const void* key, const void* value);
+void* map_put(map* map, const void* key, const void* value);
 
 void* map_get(const map* map, const void* key);
 map_iter map_begin(const map* map);
