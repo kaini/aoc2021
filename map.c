@@ -80,6 +80,8 @@ void map_put(map* map, const void* key, const void* value) {
 }
 
 void* map_get(const map* map, const void* key) {
+    assert(map);
+    assert(key);
     if (map->capacity == 0) {
         return NULL;
     }
@@ -96,10 +98,13 @@ void* map_get(const map* map, const void* key) {
 }
 
 map_iter map_begin(const map* map) {
+    assert(map);
     return map_advance(map, -1);
 }
 
 map_iter map_advance(const map* map, map_iter iter) {
+    assert(map);
+    assert(iter == (size_t)-1 || iter < map->capacity);
     do {
         iter += 1;
     } while (iter < map->capacity && !map->actives[iter]);
@@ -107,14 +112,19 @@ map_iter map_advance(const map* map, map_iter iter) {
 }
 
 map_iter map_end(const map* map) {
+    assert(map);
     return map->capacity;
 }
 
 void* map_key(const map* map, map_iter iter) {
+    assert(map);
+    assert(iter < map->capacity);
     return map->keys + map->key_size * iter;
 }
 
 void* map_value(const map* map, map_iter iter) {
+    assert(map);
+    assert(iter < map->capacity);
     return map->values + map->value_size * iter;
 }
 
