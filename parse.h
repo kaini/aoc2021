@@ -1,2 +1,2 @@
 
-int parse_binary(const char* str);
+int parse_binary(const char *str);

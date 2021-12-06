@@ -1,15 +1,15 @@
 #include "arraylist.h"
 #include "parse.h"
-#include <stdio.h>
 #include <assert.h>
+#include <stdio.h>
 
 #define NUMBER_STR_LEN 20
 #define NUMBER_STR_FORMAT "%19s"
 typedef char number_str[NUMBER_STR_LEN];
 
-static int count_ones(arraylist* numbers, size_t index) {
+static int count_ones(arraylist *numbers, size_t index) {
     int result = 0;
-    for (number_str* number = arraylist_begin(numbers); number != arraylist_end(numbers); ++number) {
+    for (number_str *number = arraylist_begin(numbers); number != arraylist_end(numbers); ++number) {
         if ((*number)[index] == '1') {
             result += 1;
         }
@@ -22,16 +22,16 @@ typedef struct filter_ch_ctx {
     size_t index;
 } filter_ch_ctx;
 
-static bool filter_ch(void* item_ptr, void* ctx_ptr) {
-    number_str* item = item_ptr;
-    filter_ch_ctx* ctx = ctx_ptr;
+static bool filter_ch(void *item_ptr, void *ctx_ptr) {
+    number_str *item = item_ptr;
+    filter_ch_ctx *ctx = ctx_ptr;
     return (*item)[ctx->index] == ctx->ch;
 }
 
-static int find_rating(arraylist* orig_numbers, bool oxygen) {
+static int find_rating(arraylist *orig_numbers, bool oxygen) {
     arraylist numbers;
     arraylist_init(&numbers, sizeof(number_str));
-    for (number_str* item = arraylist_begin(orig_numbers); item != arraylist_end(orig_numbers); ++item) {
+    for (number_str *item = arraylist_begin(orig_numbers); item != arraylist_end(orig_numbers); ++item) {
         arraylist_append(&numbers, item);
     }
 
@@ -45,7 +45,7 @@ static int find_rating(arraylist* orig_numbers, bool oxygen) {
         } else if (ones < zeros) {
             ch = oxygen ? '0' : '1';
         }
-        arraylist_filter_destroy_order(&numbers, filter_ch, &(filter_ch_ctx){ .ch = ch, .index = i });
+        arraylist_filter_destroy_order(&numbers, filter_ch, &(filter_ch_ctx){.ch = ch, .index = i});
         i += 1;
         assert(i < NUMBER_STR_LEN);
     }
@@ -69,11 +69,11 @@ int main() {
         arraylist_append(&numbers, &number);
     }
 
-    int ones_count[NUMBER_STR_LEN] = { 0 };
-    int zero_count[NUMBER_STR_LEN] = { 0 };
-    for (number_str* number = arraylist_begin(&numbers); number != arraylist_end(&numbers); ++number) {
+    int ones_count[NUMBER_STR_LEN] = {0};
+    int zero_count[NUMBER_STR_LEN] = {0};
+    for (number_str *number = arraylist_begin(&numbers); number != arraylist_end(&numbers); ++number) {
         size_t i = 0;
-        for (char* nc = *number; *nc; ++nc, ++i) {
+        for (char *nc = *number; *nc; ++nc, ++i) {
             if (*nc == '1') {
                 ones_count[i] += 1;
             } else {

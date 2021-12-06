@@ -1,11 +1,9 @@
 #include "arraylist.h"
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
-#include <assert.h>
 
-typedef enum direction {
-    FORWARD, UP, DOWN
-} direction;
+typedef enum direction { FORWARD, UP, DOWN } direction;
 
 typedef struct command {
     direction direction;
@@ -25,22 +23,33 @@ int main() {
         assert(result == 2);
 
         direction direction;
-        if (strcmp(direction_str, "forward") == 0) direction = FORWARD;
-        else if (strcmp(direction_str, "up") == 0) direction = UP;
-        else if (strcmp(direction_str, "down") == 0) direction = DOWN;
-        else assert(0);
+        if (strcmp(direction_str, "forward") == 0)
+            direction = FORWARD;
+        else if (strcmp(direction_str, "up") == 0)
+            direction = UP;
+        else if (strcmp(direction_str, "down") == 0)
+            direction = DOWN;
+        else
+            assert(0);
 
-        arraylist_append(&commands, &(command){ .direction = direction, .amount = amount });
+        arraylist_append(&commands, &(command){.direction = direction, .amount = amount});
     }
 
     int depth = 0;
     int position = 0;
-    for (command* command = arraylist_begin(&commands); command != arraylist_end(&commands); ++command) {
+    for (command *command = arraylist_begin(&commands); command != arraylist_end(&commands); ++command) {
         switch (command->direction) {
-            case FORWARD: position += command->amount; break;
-            case UP: depth -= command->amount; break;
-            case DOWN: depth += command->amount; break;
-            default: assert(0);
+        case FORWARD:
+            position += command->amount;
+            break;
+        case UP:
+            depth -= command->amount;
+            break;
+        case DOWN:
+            depth += command->amount;
+            break;
+        default:
+            assert(0);
         }
     }
     printf("%d\n", depth * position);
@@ -48,12 +57,20 @@ int main() {
     depth = 0;
     position = 0;
     int aim = 0;
-    for (command* command = arraylist_begin(&commands); command != arraylist_end(&commands); ++command) {
+    for (command *command = arraylist_begin(&commands); command != arraylist_end(&commands); ++command) {
         switch (command->direction) {
-            case FORWARD: position += command->amount; depth += aim * command->amount; break;
-            case UP: aim -= command->amount; break;
-            case DOWN: aim += command->amount; break;
-            default: assert(0);
+        case FORWARD:
+            position += command->amount;
+            depth += aim * command->amount;
+            break;
+        case UP:
+            aim -= command->amount;
+            break;
+        case DOWN:
+            aim += command->amount;
+            break;
+        default:
+            assert(0);
         }
     }
     printf("%d\n", depth * position);

@@ -1,7 +1,7 @@
 #include "arraylist.h"
-#include <stdio.h>
-#include <limits.h>
 #include <assert.h>
+#include <limits.h>
+#include <stdio.h>
 
 int main() {
     arraylist depths;
@@ -19,7 +19,7 @@ int main() {
     int count = 0;
     int prev_depth = INT_MAX;
     for (size_t i = 0; i < arraylist_size(&depths); ++i) {
-        int depth = *(int*)arraylist_get(&depths, i);
+        int depth = *(int *)arraylist_get(&depths, i);
         if (depth > prev_depth) {
             count += 1;
         }
@@ -31,11 +31,13 @@ int main() {
     int prev_sum = INT_MAX;
     int sum = 0;
     for (size_t i = 0; i < arraylist_size(&depths); ++i) {
-        sum += *(int*)arraylist_get(&depths, i);
-        if (i >= 3) sum -= *(int*)arraylist_get(&depths, i - 3);
+        sum += *(int *)arraylist_get(&depths, i);
+        if (i >= 3)
+            sum -= *(int *)arraylist_get(&depths, i - 3);
         if (i >= 2) {
-            if (sum > prev_sum) count += 1;
-            prev_sum = sum; 
+            if (sum > prev_sum)
+                count += 1;
+            prev_sum = sum;
         }
     }
     printf("%d\n", count);
