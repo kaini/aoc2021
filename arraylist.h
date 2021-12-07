@@ -19,6 +19,7 @@ void arraylist_free(arraylist *arraylist);
 
 void arraylist_append(arraylist *arraylist, const void *item);
 void arraylist_filter_destroy_order(arraylist *arraylist, bool (*filter)(void *item, void *ctx), void *ctx);
+void arraylist_sort(arraylist *arraylist, int (*cmp)(const void *a, const void *b));
 
 void *arraylist_get(const arraylist *arraylist, size_t index);
 size_t arraylist_size(const arraylist *arraylist);

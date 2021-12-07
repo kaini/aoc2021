@@ -45,6 +45,12 @@ void arraylist_filter_destroy_order(arraylist *arraylist, bool (*filter)(void *i
     }
 }
 
+void arraylist_sort(arraylist *arraylist, int (*cmp)(const void *a, const void *b)) {
+    assert(arraylist);
+    assert(cmp);
+    qsort(arraylist->buffer, arraylist->size, arraylist->item_size, cmp);
+}
+
 void *arraylist_get(const arraylist *arraylist, size_t index) {
     assert(arraylist);
     assert(index < arraylist->size);
