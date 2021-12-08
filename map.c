@@ -30,11 +30,10 @@ void map_free(map *map) {
 
 static void *map_put_raw(map *map, const void *key, const void *value) {
     size_t slot = map->hash_key(key) % map->capacity;
-    while (map->actives[slot] && !map->equal_key(key, map->keys + map->key_size * slot)) {
+    while (map->actives[slot] == MAP_ACTIVE && !map->equal_key(key, map->keys + map->key_size * slot)) {
         slot = (slot + 1) % map->capacity;
     }
-    map->size += 1;
-    map->actives[slot] = true;
+    map->actives[slot] = MAP_ACTIVE;
     memcpy(map->keys + map->key_size * slot, key, map->key_size);
     memcpy(map->values + map->value_size * slot, value, map->value_size);
     return map->values + map->value_size * slot;
@@ -46,17 +45,17 @@ void *map_put(map *map, const void *key, const void *value) {
 
     // Keep a load factor of at most 50 %
     if (map->size * 2 >= map->capacity) {
-        bool *old_actives = map->actives;
+        map_state *old_actives = map->actives;
         char *old_keys = map->keys;
         char *old_values = map->values;
         size_t old_capacity = map->capacity;
 
         map->capacity = (map->capacity + 1) * 2;
-        map->actives = calloc(map->capacity, sizeof(bool));
+        map->actives = calloc(map->capacity, sizeof(map_state));
         map->keys = malloc(map->capacity * map->key_size);
         map->values = malloc(map->capacity * map->value_size);
         for (size_t i = 0; i < old_capacity; ++i) {
-            if (old_actives[i]) {
+            if (old_actives[i] == MAP_ACTIVE) {
                 map_put_raw(map, old_keys + map->key_size * i, old_values + map->value_size * i);
             }
         }
@@ -66,7 +65,27 @@ void *map_put(map *map, const void *key, const void *value) {
         free(old_values);
     }
 
+    map->size += 1;
     return map_put_raw(map, key, value);
+}
+
+map_iter map_remove(map *map, const void *key) {
+    assert(map);
+    assert(key);
+    if (map->capacity == 0) {
+        return map_end(map);
+    }
+
+    size_t slot = map->hash_key(key) % map->capacity;
+    while (map->actives[slot] != MAP_EMPTY) {
+        if (map->actives[slot] == MAP_ACTIVE && map->equal_key(key, map->keys + map->key_size * slot)) {
+            map->actives[slot] = MAP_SKIP;
+            map->size -= 1;
+            return slot;
+        }
+        slot = (slot + 1) % map->capacity;
+    }
+    return map_end(map);
 }
 
 void *map_get(const map *map, const void *key) {
@@ -77,14 +96,13 @@ void *map_get(const map *map, const void *key) {
     }
 
     size_t slot = map->hash_key(key) % map->capacity;
-    while (map->actives[slot] && !map->equal_key(key, map->keys + map->key_size * slot)) {
+    while (map->actives[slot] != MAP_EMPTY) {
+        if (map->actives[slot] == MAP_ACTIVE && map->equal_key(key, map->keys + map->key_size * slot)) {
+            return map->values + map->value_size * slot;
+        }
         slot = (slot + 1) % map->capacity;
     }
-    if (map->actives[slot]) {
-        return map->values + map->value_size * slot;
-    } else {
-        return NULL;
-    }
+    return NULL;
 }
 
 map_iter map_begin(const map *map) {
@@ -97,7 +115,7 @@ map_iter map_advance(const map *map, map_iter iter) {
     assert(iter == (size_t)-1 || iter < map->capacity);
     do {
         iter += 1;
-    } while (iter < map->capacity && !map->actives[iter]);
+    } while (iter < map->capacity && map->actives[iter] != MAP_ACTIVE);
     return iter;
 }
 
