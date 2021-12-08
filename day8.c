@@ -123,18 +123,11 @@ int main() {
             if (mapping_matches(line, mapping)) {
                 size_t size = arraylist_size(line);
                 assert(size >= 4);
-
-                for (int i = 0; i < 4; ++i) {
-                    int number = find_number(arraylist_get(line, size - i - 1), mapping);
-                    count += number == 1 || number == 4 || number == 7 || number == 8;
+                for (int i = 0, p = 1; i < 4; i += 1, p *= 10) {
+                    int digit = find_number(arraylist_get(line, size - i - 1), mapping);
+                    count += digit == 1 || digit == 4 || digit == 7 || digit == 8;
+                    sum += digit * p;
                 }
-
-                int number = find_number(arraylist_get(line, size - 4), mapping) * 1000 +
-                             find_number(arraylist_get(line, size - 3), mapping) * 100 +
-                             find_number(arraylist_get(line, size - 2), mapping) * 10 +
-                             find_number(arraylist_get(line, size - 1), mapping);
-                sum += number;
-
                 break;
             }
         }
