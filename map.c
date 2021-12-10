@@ -28,10 +28,13 @@ void map_free(map *map) {
     free(map->values);
 }
 
-static void *map_put_raw(map *map, const void *key, const void *value) {
+static void *map_put_raw(map *map, const void *key, const void *value, bool update_size) {
     size_t slot = map->hash_key(key) % map->capacity;
     while (map->actives[slot] == MAP_ACTIVE && !map->equal_key(key, map->keys + map->key_size * slot)) {
         slot = (slot + 1) % map->capacity;
+    }
+    if (update_size && map->actives[slot] != MAP_ACTIVE) {
+        map->size += 1;
     }
     map->actives[slot] = MAP_ACTIVE;
     memcpy(map->keys + map->key_size * slot, key, map->key_size);
@@ -56,7 +59,7 @@ void *map_put(map *map, const void *key, const void *value) {
         map->values = malloc(map->capacity * map->value_size);
         for (size_t i = 0; i < old_capacity; ++i) {
             if (old_actives[i] == MAP_ACTIVE) {
-                map_put_raw(map, old_keys + map->key_size * i, old_values + map->value_size * i);
+                map_put_raw(map, old_keys + map->key_size * i, old_values + map->value_size * i, false);
             }
         }
 
@@ -65,8 +68,7 @@ void *map_put(map *map, const void *key, const void *value) {
         free(old_values);
     }
 
-    map->size += 1;
-    return map_put_raw(map, key, value);
+    return map_put_raw(map, key, value, true);
 }
 
 map_iter map_remove(map *map, const void *key) {
@@ -134,4 +136,9 @@ void *map_value(const map *map, map_iter iter) {
     assert(map);
     assert(iter < map->capacity);
     return map->values + map->value_size * iter;
+}
+
+size_t map_size(const map *map) {
+    assert(map);
+    return map->size;
 }

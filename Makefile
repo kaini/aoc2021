@@ -6,7 +6,7 @@ DAY_OBJECTS := $(patsubst %.c,build/%.o,$(DAY_SOURCES))
 DAY_EXECUTABLES := $(patsubst %.c,build/%,$(DAY_SOURCES))
 
 CC := gcc
-CFLAGS := -std=c17 -Wall -Wextra -pedantic -O3 -march=native -flto -g3 -fwrapv
+CFLAGS := -std=c17 -Wall -Wextra -pedantic -O3 -march=native -flto -g3 -ftrapv
 
 .SUFFIXES:
 .PHONY: all clean

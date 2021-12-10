@@ -37,3 +37,4 @@ map_iter map_advance(const map *map, map_iter iter);
 map_iter map_end(const map *map);
 void *map_key(const map *map, map_iter iter);
 void *map_value(const map *map, map_iter iter);
+size_t map_size(const map *map);

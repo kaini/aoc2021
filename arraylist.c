@@ -51,6 +51,22 @@ void arraylist_sort(arraylist *arraylist, int (*cmp)(const void *a, const void *
     qsort(arraylist->buffer, arraylist->size, arraylist->item_size, cmp);
 }
 
+void arraylist_clear(arraylist *arraylist) {
+    assert(arraylist);
+    arraylist->size = 0;
+}
+
+bool arraylist_pop(arraylist *arraylist, void *out_item) {
+    assert(arraylist);
+    if (arraylist->size > 0) {
+        memcpy(out_item, arraylist->buffer + (arraylist->size - 1) * arraylist->item_size, arraylist->item_size);
+        arraylist->size -= 1;
+        return true;
+    } else {
+        return false;
+    }
+}
+
 void *arraylist_get(const arraylist *arraylist, size_t index) {
     assert(arraylist);
     assert(index < arraylist->size);
