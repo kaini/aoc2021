@@ -30,6 +30,7 @@ void map_free(map *map);
 
 void *map_put(map *map, const void *key, const void *value);
 map_iter map_remove(map *map, const void *key);
+void map_clear(map *map);
 
 void *map_get(const map *map, const void *key);
 map_iter map_begin(const map *map);

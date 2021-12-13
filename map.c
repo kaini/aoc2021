@@ -90,6 +90,14 @@ map_iter map_remove(map *map, const void *key) {
     return map_end(map);
 }
 
+void map_clear(map *map) {
+    assert(map);
+    for (size_t i = 0; i < map->capacity; ++i) {
+        map->actives[i] = MAP_EMPTY;
+    }
+    map->size = 0;
+}
+
 void *map_get(const map *map, const void *key) {
     assert(map);
     assert(key);
