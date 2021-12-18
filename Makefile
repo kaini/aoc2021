@@ -7,6 +7,7 @@ DAY_EXECUTABLES := $(patsubst %.c,build/%,$(DAY_SOURCES))
 
 CC := gcc
 CFLAGS := -std=c17 -Wall -Wextra -pedantic -O3 -march=native -flto -g3 -ftrapv
+LIBS := -lm
 
 .SUFFIXES:
 .PHONY: all clean
@@ -14,7 +15,7 @@ CFLAGS := -std=c17 -Wall -Wextra -pedantic -O3 -march=native -flto -g3 -ftrapv
 all: $(DAY_EXECUTABLES)
 
 $(DAY_EXECUTABLES): build/%: build/%.o $(SHARED_OBJECTS)
-	gcc $(CFLAGS) -o $@ $^
+	gcc $(CFLAGS) -o $@ $^ $(LIBS)
 
 $(SHARED_OBJECTS) $(DAY_OBJECTS): build/%.o: %.c
 	@mkdir -p build
