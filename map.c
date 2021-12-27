@@ -29,10 +29,21 @@ void map_free(map *map) {
 }
 
 static void *map_put_raw(map *map, const void *key, const void *value, bool update_size) {
+    size_t seen_skip = (size_t)-1;
     size_t slot = map->hash_key(key) % map->capacity;
-    while (map->actives[slot] == MAP_ACTIVE && !map->equal_key(key, map->keys + map->key_size * slot)) {
+    while (map->actives[slot] != MAP_EMPTY) {
+        if (seen_skip == (size_t)-1 && map->actives[slot] == MAP_SKIP) {
+            seen_skip = slot;
+        }
+        if (map->actives[slot] == MAP_ACTIVE && map->equal_key(key, map->keys + map->key_size * slot)) {
+            break;
+        }
         slot = (slot + 1) % map->capacity;
     }
+    if (seen_skip != (size_t)-1 && map->actives[slot] != MAP_ACTIVE) {
+        slot = seen_skip;
+    }
+
     if (update_size && map->actives[slot] != MAP_ACTIVE) {
         map->size += 1;
     }

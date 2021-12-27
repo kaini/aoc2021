@@ -1,4 +1,4 @@
-SHARED_SOURCES := arraylist.c parse.c map.c
+SHARED_SOURCES := arraylist.c parse.c map.c heap.c
 SHARED_OBJECTS := $(patsubst %.c,build/%.o,$(SHARED_SOURCES))
 
 DAY_SOURCES = $(wildcard day*.c)
