@@ -25,16 +25,6 @@ static char *hallway(state *state) { return state->state; }
 
 static char *room(state *state, int r) { return state->state + HALLWAY_SIZE + r * state->room_size; }
 
-#if 0
-static void fprint_state(FILE *file, const state *s) {
-    fprintf(file, "#############\n");
-    fprintf(file, "#%.11s#\n", &s->hallway[0]);
-    fprintf(file, "###%c#%c#%c#%c###\n", s->rooms[0][0], s->rooms[1][0], s->rooms[2][0], s->rooms[3][0]);
-    fprintf(file, "  #%c#%c#%c#%c#  \n", s->rooms[0][1], s->rooms[1][1], s->rooms[2][1], s->rooms[3][1]);
-    fprintf(file, "  #########\n");
-}
-#endif
-
 static bool state_eq(const void *a, const void *b) {
     const state *aa = a;
     const state *bb = b;
